@@ -1,7 +1,15 @@
-Train = readtable("clean_train.csv");
+% import test and training data
+Train = readtable("./data/clean_train.csv");
 Xtrain = table2array(Train(:, 3: end -1));
 Ytrain = Train.satisfaction;
+Test = readtable("./data/clean_test.csv");
+Xtest = table2array(Test(:, 3: end -1));
+Ytest = Test.satisfaction;
 
+
+% i don't think most of the commented code is needed, we're not splitting
+% the data ourselves so don't need to run it j times with a new split each
+% time
 % ACC_train = [];
 % ACC_val = [];
 
@@ -47,15 +55,22 @@ Ytrain = Train.satisfaction;
 
 % [best_valACC, ind] = max(ACC_val_mean);
 
-Test = readtable("clean_test.csv");
-Xtest = table2array(Test(:, 3: end -1));
-Ytest = Test.satisfaction;
+% creates nCount models and calculates their accuracies varying how many
+% nearest neighbours to look for as nCount
+nCount = 10;
+ACC_test = zeros(nCount, 1);
 
+for n = 1:nCount
+    % create model, calculate confusion matrix, & calculate accuracy
+    knn = fitcknn(Xtrain, Ytrain,'NumNeighbors', n, "Standardize",true);
+    confmat = confusionmat(Ytest , knn.predict(Xtest));
+    ACC_test(n) = trace(confmat)/sum(confmat(:));
+end
 
-ind = 9
-knn = fitcknn(Xtrain, Ytrain,'NumNeighbors', ind, "Standardize",true);
-confmat = confusionmat(Ytest , knn.predict(Xtest));
-ACC_test = trace(confmat)/sum(confmat(:))
+% plot of n=1:10 can be found in ./data
+plot(ACC_test);
+% clears all variables except the accuracies since they chonky
+clearvars -except ACC_test
 
 
 

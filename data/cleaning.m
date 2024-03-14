@@ -1,6 +1,6 @@
 % converts all data columns into integer values
-% the grammar on the default data is inconsisent so be careful when
-% editing that everything you should change does
+% the grammar on the default data is inconsisent so be careful everything 
+% that should change does
 
 % whether youre cleaning 'test' or 'train' data
 data_type = 'train';
